@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- ✏️ EDIT: GA4 tracking (Google tag). Measurement ID appears twice below -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-W81QT3NC23"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-W81QT3NC23');
+  window.track = function(name, params){ gtag('event', name, params || {}); };
+</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Uyen Nguyen Portfolio</title>
@@ -469,6 +478,29 @@ footer{padding-block:22px;font-size:.8rem;color:var(--muted)}
     f.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();open(i);}});});
   addEventListener('keydown',function(e){if(!lb||lb.hidden)return;
     if(e.key==='Escape')close();if(e.key==='ArrowRight'){idx=(idx+1)%figs.length;render();}if(e.key==='ArrowLeft'){idx=(idx-1+figs.length)%figs.length;render();}});
+})();
+</script>
+<script>
+// GA4 custom events: contact clicks, résumé opens, projects viewed, photos opened
+(function(){
+  document.addEventListener('click', function(e){
+    var a = e.target.closest('a'); if (a) {
+      var h = a.getAttribute('href') || '', where = a.closest('section,header') ? (a.closest('section,header').id || a.closest('section,header').className || 'page') : 'page';
+      if (h.indexOf('mailto:') === 0) track('contact_email', {location: where});
+      else if (h.indexOf('linkedin.com') > -1) track('click_linkedin', {location: where});
+      else if (/\.pdf$/i.test(h)) track('open_resume', {location: where});
+    }
+    var f = e.target.closest('.grid figure');
+    if (f) { var img = f.querySelector('img'); track('view_photo', {photo: img ? img.getAttribute('src') : ''}); }
+  });
+  if ('IntersectionObserver' in window) {
+    var seen = {};
+    var io = new IntersectionObserver(function(es){ es.forEach(function(en){
+      var id = en.target.getAttribute('aria-labelledby') || en.target.id;
+      if (en.isIntersecting && !seen[id]) { seen[id] = 1; var h = en.target.querySelector('h2'); track('view_section', {section: h ? h.textContent.trim() : id}); }
+    }); }, {threshold: .35});
+    document.querySelectorAll('section.project, #experience, #about-me, #contact').forEach(function(s){ io.observe(s); });
+  }
 })();
 </script>
 </body>
